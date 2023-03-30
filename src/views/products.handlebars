@@ -1,0 +1,43 @@
+<h1>Productos en venta</h1>
+<div class="container-user-actions">
+
+    <p>Bienvenido <b>{{userFirst}} !!</b></p>
+    <p>Rol: <b>{{userRole}}</b></p>
+    <a href="/api/session/logout">Logout</a>
+
+</div>
+
+<div class="container-categories">
+    <span>Categorías: </span>
+    <a href="?">Todo</a>
+    <a href="?category=accion">Accion</a>
+    <a href="?category=terror">Terror</a>
+</div>
+{{#if statusBool}}
+    <div class="container-pages">
+
+        {{#if hasPrevPage}}
+            <a href="">Página Anterior</a>
+        {{/if}}
+        {{#if hasNextPage}}
+            <a href="">Página Siguiente</a>
+        {{/if}}
+    </div>
+{{/if}}
+
+{{#if statusBool}}
+    {{#each payload}}
+        <div class="product">
+            <h2>{{title}}</h2>
+            <p>{{description}}</p>
+            <span>Precio: $ {{price}}</span>
+        </div>
+    {{/each}}
+
+{{else}}
+    <div>
+        <h2>No se encontraron productos</h2>
+    </div>
+{{/if}}
+
+{{! <script src="js/products.js"></script> }}

@@ -1,0 +1,17 @@
+html{
+    background-color:hsla(236,68%,60%,1);
+    background-image:
+        radial-gradient(at 13% 91%, hsla(236,68%,60%,1) 0px, transparent 50%),
+        radial-gradient(at 51% 100%, hsla(191,91%,65%,1) 0px, transparent 50%);
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    color: rgb(4, 43, 43);
+}
+
+#form-login > *{
+    font-weight: 400;
+}
+
+.container-categories{
+    padding: top 20px;
+}
