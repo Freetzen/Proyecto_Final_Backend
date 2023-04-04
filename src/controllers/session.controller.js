@@ -1,5 +1,6 @@
 import { userManager } from "./user.controller.js"
 import { validatePassword } from "../utils/bcrypt.js"
+import passport from "passport";
 
 export const getSession = async (req, res) => {
     try {
@@ -19,7 +20,35 @@ export const getSession = async (req, res) => {
     }
 }
 
-export const checkLogin = async (req, res) => {
+export const tryLogin = async (req, res) => {
+    passport.authenticate('login', (error, user) => {
+        try {
+            if (error) {
+                console.log(`TRYLOGIN> error`)
+                req.session.message = "An error ocurred, try again later"
+                res.redirect('/login')
+            }
+            if (!user) {
+                console.log(`TRYLOGIN> incorrect credentials`)
+                req.session.message = "Usuario o Contraseña incorrecta"
+                res.redirect('/login')
+            }
+
+            console.log(`TRYLOGIN> authenticated`)
+            req.session.login = true
+            req.session.name = user.first_name
+            req.session.role = user.role
+
+            res.redirect('/products')
+        } catch (error) {
+            res.status(500).json({
+                message: error.message
+            })
+        }
+    })(req, res)
+}
+
+/* export const checkLogin = async (req, res) => {
     try {
         //
         const { email, password } = req.body
@@ -29,7 +58,7 @@ export const checkLogin = async (req, res) => {
             req.session.userFirst = "Admin Coder"
             req.session.role = "admin"
             console.log(`${email} logged in`)
-            res.redirect('/products')
+            res.redirect(200, '/products')
         } else {
             const user = await userManager.getUserByEmail(email)
 
@@ -38,7 +67,7 @@ export const checkLogin = async (req, res) => {
                 req.session.userFirst = user.first_name
                 req.session.role = user.role
                 console.log(`${email} logged in as ${user.role}`)
-                res.redirect('/products')
+                res.redirect(200, '/products')
             } else {
                 res.status(401).json({
                     message: "User or password incorrect"
@@ -50,7 +79,7 @@ export const checkLogin = async (req, res) => {
             message: error.message
         })
     }
-}
+} */
 
 export const destroySession = (req, res) => {
     try {
@@ -67,7 +96,7 @@ export const destroySession = (req, res) => {
 }
 
 export const requireAuth = (req, res, next) => {
-    console.log(req.session.login)
-    req.session.login ? next() : res.redirect('/login')
+    console.log(`SESSIONCTRL> Is session active?: ${req.session.login}`);
+    req.session.login ? next() : res.redirect("/login");
 
 }

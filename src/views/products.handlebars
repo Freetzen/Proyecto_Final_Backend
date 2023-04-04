@@ -1,43 +1,44 @@
-<h1>Productos en venta</h1>
-<div class="container-user-actions">
-
-    <p>Bienvenido <b>{{userFirst}} !!</b></p>
-    <p>Rol: <b>{{userRole}}</b></p>
-    <a href="/api/session/logout">Logout</a>
-
+{{>navbar}}
+<h2>Juegos</h2>
+<div class="container categories">
+	<span>Categorías:</span>
+	<a href="?">Todo</a>
+	<a href="?category=accion">Acción</a>
+	<a href="?category=terror">Terror</a>
 </div>
-
-<div class="container-categories">
-    <span>Categorías: </span>
-    <a href="?">Todo</a>
-    <a href="?category=accion">Accion</a>
-    <a href="?category=terror">Terror</a>
+<div class="container items-per-page"></div>
+{{#if statusBool}}
+<div class="container">
+	<div class="row">
+		{{#each payload}}
+		<div class="col-4 card product">
+			<div class="card-body">
+				<h3 class="card-title">{{title}}</h3>
+				<div class="card-text">
+					<p>{{description}}</p>
+					<span>Precio: $ {{price}}</span>
+				</div>
+				<div class="card-button">
+					<button class="btn btn-primary btn-card-addtocart">Agregar al carrito</button>
+				</div>
+			</div>
+		</div>
+		{{/each}}
+	</div>
 </div>
-{{#if statusBool}}
-    <div class="container-pages">
-
-        {{#if hasPrevPage}}
-            <a href="">Página Anterior</a>
-        {{/if}}
-        {{#if hasNextPage}}
-            <a href="">Página Siguiente</a>
-        {{/if}}
-    </div>
-{{/if}}
-
-{{#if statusBool}}
-    {{#each payload}}
-        <div class="product">
-            <h2>{{title}}</h2>
-            <p>{{description}}</p>
-            <span>Precio: $ {{price}}</span>
-        </div>
-    {{/each}}
 
 {{else}}
-    <div>
-        <h2>No se encontraron productos</h2>
-    </div>
+<div>
+	<h2>No se encontraron productos</h2>
+</div>
+{{/if}} {{#if statusBool}}
+<div class="container container-pages">
+	{{#if hasPrevPage}}
+	<a href="">Página Anterior</a>
+	{{/if}} {{#if hasNextPage}}
+	<a href="">Página Siguiente</a>
+	{{/if}}
+</div>
 {{/if}}
 
 {{! <script src="js/products.js"></script> }}

@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { requireAuth } from "../controllers/session.controller.js";
-import { renderProducts, viewCarts, viewLogin, viewProducts, viewRegister } from "../controllers/view.controller.js";
+import { requireAuth, tryLogin  } from "../controllers/session.controller.js";
+import { renderProducts, viewCarts, viewLogin, viewRegister } from "../controllers/view.controller.js";
 
 const routerViews = Router()
 
-routerViews.get('/', requireAuth, viewProducts)
+routerViews.get('/', requireAuth, viewLogin)
 
 routerViews.get('/login', viewLogin)
 

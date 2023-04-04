@@ -9,7 +9,8 @@ import * as path from 'path'
 import MongoStore from 'connect-mongo'
 import cookieParser from 'cookie-parser'
 import session from 'express-session';
-//import { getManagerMessages } from './dao/daoManager.js'
+import initializePassport from './config/passport.js'
+import passport from 'passport'
 
 const app = express()
 
@@ -27,6 +28,11 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 }))
+
+// Passport
+initializePassport()
+app.use(passport.initialize())
+app.use(passport.session())
 
 // Handlebars
 app.engine('handlebars', engine());

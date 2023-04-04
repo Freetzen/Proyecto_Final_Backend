@@ -3,21 +3,24 @@ import { getSession } from "./session.controller.js"
 const PRODUCTS_URL = 'http://localhost:8080/api/products'
 const CARTS_URL = 'http://localhost:8080/api/carts'
 
-export const viewProducts = (req, res) => {
+/* export const viewProducts = (req, res) => {
     res.redirect('/products')
-}
+} */
 
 export const viewLogin = (req, res) => {
-    res.render('login')
+    const message = req.session.message
+    delete req.session.message
+    res.render("login", { message });
 }
 
 export const viewRegister = (req, res) => {
-    res.render('register')
+    const message = req.session.message
+    delete req.session.message
+    res.render("register", { message });
 }
 
 export const viewCarts = async (req, res) => {
     try {
-
         const response = await fetch(`${CARTS_URL}/${req.params.cid}`)
         const data = await response.json()
 
@@ -50,28 +53,23 @@ export const renderProducts = async (req, res) => {
     try {
         let { limit = 10, page = 1, category = undefined, stock = undefined, sort = undefined } = req.query;
 
-        // Prev y Next Pages
-        const categoryLink = category ? `&category=${category}` : ""
-        const stockLink = stock ? `&stock=${stock}` : ""
-        const limitLink = limit ? `&limit=${limit}` : ""
-        const sortLink = sort ? `&sort=${sort}` : ""
-        const pageLink = page ? `&page=${page}` : ""
+        const userFirst = req.session.name
+        const userRole = req.session.role
 
-        const response = await fetch(`${PRODUCTS_URL}?${categoryLink}${stockLink}${limitLink}${sortLink}${pageLink}`)
-        const data = await response.json()
+        const categoryLink = category ? `&category=${category}` : "";
+        const stockLink = stock ? `&stock=${stock}` : "";
+        const limitLink = limit ? `&limit=${limit}` : "";
+        const sortLink = sort ? `&sort=${sort}` : "";
+        const pageLink = page ? `&page=${page}` : "";
 
-        const { status, payload, totalPages, prevPage, nextPage, actualPage, hasPrevPage, hasNextPage, prevLink, nextLink } = data
+        const response = await fetch(`${PRODUCTS_URL}?${categoryLink}${stockLink}${limitLink}${sortLink}${pageLink}`);
+        const data = await response.json();
 
-        let statusBool = status === "success" ? true : false
+        const { status, payload, totalPages, prevPage, nextPage, actualPage, hasPrevPage, hasNextPage, prevLink, nextLink } = data;
 
-        //Session data
+        let statusBool = status === "success" ? true : false;
 
-        const sessionData = await getSession(req, res)
-        console.log({ sessionData })
-        const userFirst = sessionData.name
-        const userRole = sessionData.role
-
-        res.render('products', {
+        res.render("products", {
             statusBool,
             payload,
             totalPages,
@@ -82,14 +80,17 @@ export const renderProducts = async (req, res) => {
             hasNextPage,
             prevLink,
             nextLink,
-            userFirst,
-            userRole
-        })
+            user: {
+                name: userFirst,
+                role: userRole
+            }
+
+        });
     } catch (error) {
-        res.render('products', {
+        res.render("products", {
             status: "error",
-            payload: error
-        })
-        console.log(error)
+            payload: error,
+        });
+        console.log(error);
     }
-}
+};

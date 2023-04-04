@@ -1,9 +1,17 @@
 import { Router } from "express";
-import { destroySession, checkLogin, getSession } from "../controllers/session.controller.js";
+import passport from "passport";
+import { destroySession, tryLogin} from "../controllers/session.controller.js";
 
 const routerSession = Router()
 
-routerSession.post('/login', checkLogin)
-routerSession.get('/logout', destroySession)
+routerSession.post("/login", tryLogin);
+
+routerSession.get("/logout", destroySession);
+
+routerSession.get("/testJWT", passport.authenticate("jwt", { session: false },
+    (req, res) => {
+        res.send({ message: "tokenJWT" });
+    })
+);
 
 export default routerSession
