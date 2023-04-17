@@ -27,11 +27,13 @@ export const tryLogin = async (req, res) => {
                 console.log(`TRYLOGIN> error`)
                 req.session.message = "An error ocurred, try again later"
                 res.redirect('/login')
+                return 
             }
             if (!user) {
                 console.log(`TRYLOGIN> incorrecto`)
                 req.session.message = "Usuario o Contraseña incorrecta"
                 res.redirect('/login')
+                return
             }
 
             console.log(`TRYLOGIN> Autenticado`)
@@ -40,6 +42,8 @@ export const tryLogin = async (req, res) => {
             req.session.role = user.role
 
             res.redirect('/products')
+            return
+            
         } catch (error) {
             res.status(500).json({
                 message: error.message

@@ -10,13 +10,13 @@ import { authToken, generateToken } from "../utils/jwt.js";
 // Passport como middleware
 const LocalStrategy = local.Strategy; //Estrategia local de autenticación 
 
-const JWTStrategy = jwt.Strategy;
-const ExtractJwt = jwt.ExtractJwt;
+const JWTStrategy = jwt.Strategy; //Estrategia de JWT
+const ExtractJwt = jwt.ExtractJwt; //Extractor, ya sea headers, cookies, etc...
 
 const initializePassport = () => {
     const cookieExtractor = (req) => {
         // Si existen las cookies, verifica que sea jwt cookie
-        const token = req && req.cookies ? req.cookies('jwtCookies') : null;
+        const token = req && req.cookies ? req.cookies('jwtCookies') : null; //Si no existe, null o undefined
         return token;
     };
 
@@ -25,8 +25,8 @@ const initializePassport = () => {
         'jwt',
         new JWTStrategy(
             {
-                jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
-                secretOrKey: process.env.COOKIE_SECRET,
+                jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]), //jwtFromRequest (De donde extraigo mi token)
+                secretOrKey: process.env.COOKIE_SECRET, //Mismo valor que las firma de las Cookies
             },
             async (jwt_payload, done) => {
                 try {
@@ -105,23 +105,24 @@ const initializePassport = () => {
                     console.log(profile);
                     const user = await userManager.getUserByEmail(profile._json.email);
 
-                    if (user) {
-                        console.log('encontró user existente en github');
+                    if (user) { //Usuario ya existe en BDD
+                        console.log('encontró user en github');
                         done(null, user);
-                    } else {
+                    } else { //Si no esta logeado, creamos el usuario
                         console.log('nuevo user desde github');
-                        //const hashPassword = createHash('')
+                        const hashPassword = createHash('coder1234')
                         const createdUser = await userManager.addElements({
-                            first_name: profile._json.name,
+                            first_name: profile._json.name, 
                             last_name: ' ',
                             email: profile._json.email,
-                            password: ' ', // Default password required by Challenge #5
+                            password: hashPassword,
                             role: 'user',
                         });
 
                         done(null, createdUser);
                     }
                 } catch (error) {
+                    console.log(error)
                     return done(error);
                 }
             }
