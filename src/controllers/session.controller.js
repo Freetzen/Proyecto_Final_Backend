@@ -1,7 +1,3 @@
-import { userManager } from "./user.controller.js"
-import { validatePassword } from "../utils/bcrypt.js"
-import passport from "passport";
-
 export const getSession = async (req, res) => {
     try {
         if (req.session.login) {
@@ -20,36 +16,44 @@ export const getSession = async (req, res) => {
     }
 }
 
+export const getCurrentSession = (req, res) => {
+    try {
+        !req.session.login ? res.send(`No session active`) : res.send({ status: "success", payload: req.user })
+    } catch (error) {
+        res.status(500).send({
+            message: error.message
+        })
+    }
+}
+
 export const tryLogin = async (req, res) => {
-    passport.authenticate('login', (error, user) => {
-        try {
-            if (error) {
-                console.log(`TRYLOGIN> error`)
-                req.session.message = "An error ocurred, try again later"
-                res.redirect('/login')
-                return 
-            }
-            if (!user) {
-                console.log(`TRYLOGIN> incorrecto`)
-                req.session.message = "Usuario o Contraseña incorrecta"
-                res.redirect('/login')
-                return
-            }
 
-            console.log(`TRYLOGIN> Autenticado`)
-            req.session.login = true
-            req.session.name = user.first_name
-            req.session.role = user.role
-
-            res.redirect('/products')
-            return
-            
-        } catch (error) {
-            res.status(500).json({
-                message: error.message
+    try {
+        if (!req.user) {
+            return res.status(401).send({
+                status: "error",
+                error: "Invalidated user"
             })
         }
-    })(req, res)
+        console.log(`<LOGIN> authenticated`)
+        req.session.login = true
+        console.log(`<LOGIN> req.user: ${req.user}`)
+        req.session.user = {
+            first_name: req.user.first_name,
+            last_name: req.user.last_name,
+            email: req.user.email,
+            cart_id: req.user.cart_id
+        }
+        req.session.name = req.user.first_name
+        req.session.role = req.user.role
+
+        res.redirect('/products')
+    } catch (error) {
+        console.log(`TRYLOGIN[error]> ${error.message}`)
+        res.status(500).send({
+            message: error.message
+        })
+    }
 }
 
 export const destroySession = (req, res) => {
@@ -58,6 +62,8 @@ export const destroySession = (req, res) => {
             req.session.destroy()
             console.log(`Session cerrada`)
             res.status(200).redirect('/')
+        }else {
+            res.status(200).send(`Sesión inactiva`)
         }
     } catch (error) {
         res.status(500).json({

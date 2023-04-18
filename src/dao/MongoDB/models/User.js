@@ -26,6 +26,10 @@ const userSchema = new Schema({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    cart_id: {
+        type: Schema.Types.ObjectId,
+        ref: 'carts',
     }
 });
 

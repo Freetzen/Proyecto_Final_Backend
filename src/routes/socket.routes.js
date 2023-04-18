@@ -1,11 +1,12 @@
 import { Router } from 'express'
 import { getManagerProducts } from '../dao/daoManager.js';
-//import { managerMessages } from '../index.js';
+import { messageManager } from '../controllers/message.controller.js';
+import { productManager } from '../controllers/product.controller.js';
 
 const routerSocket = Router()
 
-const prodManagerData = await getManagerProducts()
-const prodManager = new prodManagerData.ManagerProductsMongoDB
+// const prodManagerData = await getManagerProducts()
+// const prodManager = new prodManagerData.ManagerProductsMongoDB
 // const msgManagerData = await getManagerMessages()
 // const msgManager = new msgManagerData()
 
@@ -14,8 +15,8 @@ routerSocket.get('/', async (req, res) => {
 
     let products
     !limit
-        ? products = await prodManager.getElements(0)
-        : products = await prodManager.getElements(limit)
+        ? products = await productManager.getElements(0)
+        : products = await productManager.getElements(limit)
     res.render("home", { products })
 
     // const products = await manager.getProducts();
@@ -33,7 +34,7 @@ routerSocket.get("/realtimeproducts", async (req, res) => {
 
     try {
 
-        const products = await prodManager.getElements(0)
+        const products = await productManager.getElements(0)
         console.log(products)
         res.render("realTimeProducts", { products: products })
     } catch (error) {
@@ -48,10 +49,9 @@ routerSocket.get("/realtimeproducts", async (req, res) => {
     // })
 })
 
-// routerSocket.get("/chat", async (req, res) => {
-//     const messages = await managerMessages.getElements(0)
-//     res.render("chat", { messages: messages })
-
-// })
+routerSocket.get("/chat", async (req, res) => {
+    const messages = await messageManager.getElements(0)
+    res.render("chat", { messages: messages })
+})
 
 export default routerSocket

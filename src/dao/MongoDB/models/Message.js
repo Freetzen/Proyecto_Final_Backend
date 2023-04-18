@@ -20,7 +20,7 @@ const messageSchema = new Schema({
     }
 })
 
-class ManagerMessageMongoDB extends ManagerMongoDB {
+export class ManagerMessageMongoDB extends ManagerMongoDB {
     constructor() {
         super(process.env.URLMONGODB, "messages", messageSchema)
     }

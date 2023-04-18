@@ -13,7 +13,7 @@ routerGithub.get('/githubSession', (req, res, next) => {
     passport.authenticate('github', async (error, user) => {
         if (error) {
             req.session.message = "Ocurrió un error"
-            
+            console.log(error)
             res.redirect('/login')
             return
         }
